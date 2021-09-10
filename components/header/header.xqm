@@ -3,7 +3,7 @@ module namespace header = "header";
 declare function header:main( $params as map(*) ){
    let $authURL :=
    'https://accounts.ivgpu.com/login?redirect=' ||
-   'https://sm2.ivgpu.com/simplex/api/v01/login?redirect=https://sm2.ivgpu.com/simplex'
+   'https://sm2.ivgpu.com/sandbox/ivgpu/statistic/login?redirect=https://sm2.ivgpu.com/simplex'
   
   let $p := 
     if( session:get( 'login' ) )
