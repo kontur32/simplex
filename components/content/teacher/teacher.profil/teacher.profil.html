@@ -1,0 +1,189 @@
+<div id="accordion">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+          Персональные данные
+        </button>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+        <div class = "row">
+    <div class = 'col-3'>
+      <center>
+      <img src = "{{фото}}" class="img-fluid" style = "max-width: 100%; height: auto;"></img>
+      </center>
+    </div>
+    <div class = 'col-9'>
+      <table class="table table-striped">
+         <tr>
+          <td><h6>Сан</h6></td>
+          <td>{{сан2}}</td>
+        </tr>
+        <tr>
+          <td><h6>Имя в хиротонии</h6></td>
+          <td>{{имя в хиротонии}}</td>
+        </tr>
+        <tr>
+          <td><h6>Фамилия</h6></td>
+          <td>{{фамилия}}</td>
+        </tr>
+        <tr>
+          <td><h6>Имя</h6></td>
+          <td>{{имя}}</td>
+        </tr>
+        <tr>
+          <td><h6>Отчество</h6></td>
+          <td>{{отчество}}</td>
+        </tr>
+        <tr>
+          <td><h6>Именины</h6></td>
+          <td>{{именины}}</td>
+        </tr>
+        <tr>
+          <td><h6>Дата рождения</h6></td>
+          <td>{{дата рождения}}</td>
+        </tr>
+		<tr>
+          <td><h6>  
+		  <form action="{{портфолио}}" method="GET">  
+		  <p style="text-align: center" title='Здесь можно сохранять сканы своих достижений: грамоты, сертификаты, справки-подтверждения'> 
+		  <button type="submit" class="btn btn-info"  width="50%" height="auto" display="block">Портфолио</button>  </p>
+		  </form>  
+		  </h6></td>
+		  <td><h6>  
+		  <form action="{{важные документы}}" method="GET">  
+		  <p style="text-align: center" title='Здесь можно сохранять сканы своих документов, чтобы они были под рукой в любой момент'> 
+		  <button type="submit" class="btn btn-info"  width="50%" height="auto" display="block">Важные документы</button>  </p>
+		  </form>  
+		  </h6></td>
+        </tr>
+      </table>
+      
+    </div>
+</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header" id="headingTwo">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+         Должностные индикаторы 
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+      <div class="card-body">
+       
+       <table class="table table-striped">
+               
+         <tr>
+          <td><h6>Кафедра</h6></td>
+          <td>{{кафедра}}</td>
+        </tr>
+        <tr>
+          <td><h6>Должность</h6></td>
+          <td>{{должность}}</td>
+        </tr>
+        <tr>
+          <td><h6>Преподаваемый предмет</h6></td>
+          <td>{{преподаваемый предмет}}</td>
+        </tr>
+        <tr>
+          <td><h6>Дата трудоустройства в САИВПДС</h6></td>
+          <td>{{дата трудоустройства в САИВПДС}}</td>
+        </tr>
+      </table>
+       
+      </div>
+    </div>
+  </div>
+  
+    <div class="card">
+    <div class="card-header" id="headingThree">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          Сведения об образовании
+        </button>
+      </h5>
+    </div>
+    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+      <div class="card-body">
+       
+
+      <table class="table table-striped">
+        <tr>
+          <td><h6>Образование</h6></td>
+          <td>{{образование}}</td>
+        </tr>
+        <tr>
+          <td><h6>Ученая степень</h6></td>
+          <td>{{ученая степень}}</td>
+        </tr>
+        <tr>
+          <td><h6>Ученое звание</h6></td>
+          <td>{{ученое звание}}</td>
+        </tr>
+         <tr>
+          <td><h6>Специальность 1</h6></td>
+          <td>{{ВО1}}, {{специальность 1}}, {{ВО1год}}</td>
+        </tr>
+         <tr>
+          <td><h6>Специальность 2</h6></td>
+          <td>{{ВО2}}, {{специальность 2}}, {{ВО2год}}</td>
+         </tr>
+      </table>
+       
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" id="headingFour">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+          Контакты
+        </button>
+      </h5>
+    </div>
+    <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
+      <div class="card-body">
+       
+
+      <table class="table table-striped">
+         <tr>
+          <td><h6>Телефон 1</h6></td>
+          <td>{{телефон}}</td>
+        </tr>
+        <tr>
+          <td><h6>Телефон 2</h6></td>
+          <td>{{телефон2}}</td>
+        </tr>
+        <tr>
+          <td><h6>e-mail</h6></td>
+          <td>{{e-mail}}</td>
+        </tr>
+        <tr>
+          <td><h6>Skype</h6></td>
+          <td>{{skype}}</td>
+        </tr>
+        <tr>
+          <td><h6>Логин и пароль в "Прометее"</h6></td>
+          <td>{{прометей}}</td>
+        </tr>
+        <tr>
+          <td><h6>Адрес</h6></td>
+          <td>регистрация:{{адрес2}}; проживание:{{адрес}};</td>
+        </tr>
+      </table>
+       
+      </div>
+    </div>
+  </div>
+
+</div>
+
