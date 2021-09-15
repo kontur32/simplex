@@ -46,7 +46,7 @@ declare function content:списокГрупп( $год, $кафедра ){
           then(
             fetch:text(
               web:create-url(
-                'http://localhost:9984/simplex/api/v01/signature/list.get', 
+                'http://localhost:8984/simplex/api/v01/signature/list.get', 
                 map{
                   'path' : 'Дела учебные по кафедре ЭУФ/ГИА по ЭУФ/ВКР приказы, нормативка/ВКР 2021/Группы/' || $номерГруппы || '.xlsx'
                 }
