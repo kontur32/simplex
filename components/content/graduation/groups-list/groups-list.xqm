@@ -27,29 +27,31 @@ declare function content:списокГрупп( $год, $кафедра, $para
     
   let $путьФайлы := 
     'Дела учебные по кафедре ЭУФ/ГИА по ЭУФ/ВКР приказы, нормативка/ВКР 2021/'
-  let $идентификаторПапки := 
+  
+  let $идентификаторПапкиКорня := 
     bitrix.disk:getFolderID( $путьФайлы )
   let $группы := 
-    bitrix.disk:getFileXLSX( $идентификаторПапки, map{ 'recursive' : 'yes', 'name' : 'Список групп.xlsx' } )
+    bitrix.disk:getFileXLSX( $идентификаторПапкиКорня, map{ 'recursive' : 'yes', 'name' : 'Список групп.xlsx' } )
   
-  let $спискиГрупп := 
-    bitrix.disk:getFileList( $идентификаторПапки, map{ 'recursive' : 'yes', 'name' : '.xlsx$' } )
+  let $идентификаторПапкиСписковГрупп := 
+    bitrix.disk:getFolderID( $путьФайлы || 'Группы' )
   let $группыЗагруженные := 
-    $спискиГрупп
-    /NAME/substring-before( text(), '.' )[ matches( ., '-[0-9]{2}' ) ]
+    bitrix.disk:getFileList( $идентификаторПапкиСписковГрупп, map{ 'name' : '.xlsx$' } )
+    [ NAME/substring-before( text(), '.' )[ matches( ., '-[0-9]{2}' ) ] ]
+  
   
   let $ресурсы := 
-    bitrix.disk:getFileXLSX(
-      $идентификаторПапки,
-      map{ 'recursive' : 'yes', 'name' : '_Ресурсы.xlsx' }
+    bitrix.disk:getFileXLSX( 
+      $идентификаторПапкиКорня,
+      map{ 'name' : '_Ресурсы.xlsx' }
     )/file/table[ 1 ]/row 
  
   let $списокГрупп :=
       <table class = "table">
       <tr>
         <th>Группа</th>
-        <th>Подписал</th>
-        <th>Еще не подписал</th>
+        <th>Подписал(а)</th>
+        <th>Еще не подписал(а)</th>
         <th></th>
         <th></th>
       </tr>
@@ -62,7 +64,7 @@ declare function content:списокГрупп( $год, $кафедра, $para
           /cell[ @label = "Субъект" ]/text()
         
         let $подписи :=
-          if( $номерГруппы = $группыЗагруженные )
+          if( $номерГруппы = $группыЗагруженные/NAME/substring-before( text(), '.' ) )
           then(
             fetch:text(
               web:create-url(
@@ -91,7 +93,7 @@ declare function content:списокГрупп( $год, $кафедра, $para
            else( "btn btn-info" )
         let $кнопкаПодписать :=
           if(
-             $номерГруппы = $группыЗагруженные and
+             $номерГруппы || '.xlsx' = $группыЗагруженные/NAME/text() and
              ( ( $user = $субъектыПодписи ) and not ( $user = $подписи ) )
            )
            then(
@@ -117,7 +119,7 @@ declare function content:списокГрупп( $год, $кафедра, $para
              <td>{ string-join( $субъектыПодписи[ . != $подписи ], ', ' ) }</td>
              <td>
                {
-                 if( $номерГруппы = $группыЗагруженные )
+                 if(  $номерГруппы = $группыЗагруженные/NAME/substring-before( text(), '.' )  )
                  then(
                    <a href = "{ $hrefСлужебка }" class="{ $стильКнопки }">Скачать служебку на темы</a>
                  )
@@ -125,10 +127,10 @@ declare function content:списокГрупп( $год, $кафедра, $para
                }</td>
              <td>
                {
-                 if( $номерГруппы = $группыЗагруженные )
+                 if( $номерГруппы || '.xlsx' = $группыЗагруженные/NAME/text() )
                  then(
                    let $hrefПравка :=
-                     $спискиГрупп
+                     $группыЗагруженные
                      [ NAME [ matches( text(), $номерГруппы ) ] ]/DETAIL__URL/text()
                    return  
                      <a href = "{ $hrefПравка }" >Править темы</a>
