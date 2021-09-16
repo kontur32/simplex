@@ -45,7 +45,12 @@ declare function content:списокГрупп( $год, $кафедра, $para
       $идентификаторПапкиКорня,
       map{ 'name' : '_Ресурсы.xlsx' }
     )/file/table[ 1 ]/row 
- 
+  let $пользователи := 
+   bitrix.disk:getFileXLSX(
+     bitrix.disk:getFolderID( 'Дела учебные по кафедре ЭУФ/simplex/' ), 
+     map{ 'name' : 'Пользователи.xlsx' }
+   )/file/table[ 1 ]/row
+   
   let $списокГрупп :=
       <table class = "table">
       <tr>
@@ -62,7 +67,8 @@ declare function content:списокГрупп( $год, $кафедра, $para
         
         let $субъектыПодписи := 
           $ресурсы[ starts-with( $ресурс, cell[ @label = "Ресурс" ]/text() ) ]
-          /cell[ @label = "Субъект" ]/text()
+          /cell[ @label = "Субъект" ]
+          /tokenize( replace( text(), '\s', '' ), ',' )
         
         let $подписи :=
           if( $номерГруппы = $группыЗагруженные/NAME/substring-before( text(), '.' ) )
@@ -113,14 +119,20 @@ declare function content:списокГрупп( $год, $кафедра, $para
         return
            <tr>
              <td><a href = "{ $href }">{ $номерГруппы }</a></td>
-               <td>
-                 { string-join( $подписи[ . = $субъектыПодписи ], ', ' ) } 
-                 { $кнопкаПодписать }
-               </td>
+             <td>
+               {
+                 content:пользователи(
+                   $пользователи[ cell[ @label = 'Логин' ] = $подписи[ . = $субъектыПодписи ] ]
+                 )
+               }
+               { $кнопкаПодписать }
+             </td>
              <td>{
                 if( $номерГруппы = $группыЗагруженные/NAME/substring-before( text(), '.' )  )
                 then(
-                  string-join( distinct-values( $субъектыПодписи[ not( .= $подписи ) ] ), ', ' )
+                  content:пользователи(
+                   $пользователи[ cell[ @label = 'Логин' ] = distinct-values( $субъектыПодписи[ not( .= $подписи ) ] ) ]
+                 )
                 )
                 else()
               }</td>
@@ -149,4 +161,14 @@ declare function content:списокГрупп( $год, $кафедра, $para
       </table>
   return
     $списокГрупп
+};
+
+declare function content:пользователи( $пользователи ){
+  let $список :=
+    for $i in $пользователи
+    return
+     substring( $i/cell[ @label = 'Имя' ]/text() , 1, 1 ) || '. ' ||
+     $i/cell[ @label = 'Фамилия' ]/text()
+  return
+    string-join( $список, ', ')
 };
