@@ -59,6 +59,7 @@ declare function content:списокГрупп( $год, $кафедра, $para
         for $i in $группы/file/table[ 1 ]/row
         let $номерГруппы := $i/cell[ @label = "Группа" ]/text()
         let $ресурс := $путьФайлы || 'Группы/' || $номерГруппы || '.xlsx'
+        
         let $субъектыПодписи := 
           $ресурсы[ starts-with( $ресурс, cell[ @label = "Ресурс" ]/text() ) ]
           /cell[ @label = "Субъект" ]/text()
@@ -66,16 +67,16 @@ declare function content:списокГрупп( $год, $кафедра, $para
         let $подписи :=
           if( $номерГруппы = $группыЗагруженные/NAME/substring-before( text(), '.' ) )
           then(
-            fetch:text(
+            let $путьПроверкиПодписей :=
               web:create-url(
                 $params?_config( 'host' ) || '/simplex/api/v01/signature/list.get', 
-                map{
-                  'path' : $ресурс
-                }
+                map{ 'path' : $ресурс }
               )
-            )
+            return
+              tokenize( fetch:text( $путьПроверкиПодписей ), ',' )
           )
           else()
+        
         let $href := 
           web:create-url(
             '/simplex/graduation/students',
@@ -116,7 +117,13 @@ declare function content:списокГрупп( $год, $кафедра, $para
                  { string-join( $подписи[ . = $субъектыПодписи ], ', ' ) } 
                  { $кнопкаПодписать }
                </td>
-             <td>{ string-join( $субъектыПодписи[ . != $подписи ], ', ' ) }</td>
+             <td>{
+                if( $номерГруппы = $группыЗагруженные/NAME/substring-before( text(), '.' )  )
+                then(
+                  string-join( distinct-values( $субъектыПодписи[ not( .= $подписи ) ] ), ', ' )
+                )
+                else()
+              }</td>
              <td>
                {
                  if(  $номерГруппы = $группыЗагруженные/NAME/substring-before( text(), '.' )  )
