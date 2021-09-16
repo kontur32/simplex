@@ -2,7 +2,10 @@ module namespace avatar = "header/avatar";
 
 
 declare function avatar:main( $params as map(*) ){
-  
+  let $requestParams := 
+     for $i in request:parameter-names()
+     return
+       $i || '=' || request:parameter( $i )
   let $userLabel :=
     if( session:get( 'userName') )
     then( session:get( 'userName' ) )
@@ -14,6 +17,7 @@ declare function avatar:main( $params as map(*) ){
   return
     map{
       "userLabel" : $userLabel,
-      "userAvatarURL" : $avatar
+      "userAvatarURL" : $avatar,
+      "redirect" : request:uri() || '?' || string-join( $requestParams, '&amp;' )
     }
 };

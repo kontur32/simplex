@@ -1,9 +1,15 @@
 module namespace header = "header";
 
 declare function header:main( $params as map(*) ){
+   let $requestParams := 
+     for $i in request:parameter-names()
+     return
+       $i || '=' || request:parameter( $i )
+   
    let $authURL :=
-   'https://accounts.ivgpu.com/login?redirect=' ||
-   'https://sm2.ivgpu.com/sandbox/ivgpu/statistic/login?redirect=https://sm2.ivgpu.com/simplex'
+     'https://accounts.ivgpu.com/login?redirect=' ||
+     'https://sm2.ivgpu.com/sandbox/ivgpu/statistic/login?redirect=' || 
+     request:uri() || '?' || string-join( $requestParams, '&amp;' )
   
   let $p := 
     if( session:get( 'login' ) )
