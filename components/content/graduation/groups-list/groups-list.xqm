@@ -15,40 +15,60 @@ declare function content:main( $params ){
     map{
       'год' : request:parameter( 'year' ),
       'кафедра' : request:parameter( 'dep' ),
-      'списокВыпускныхГрупп' : content:списокГрупп( $год, $кафедра )
+      'списокВыпускныхГрупп' : content:списокГрупп( $год, $кафедра, $params )
     }
 };
 
-declare function content:списокГрупп( $год, $кафедра ){
+declare function content:списокГрупп( $год, $кафедра, $params ){
+  let $user := 
+    if( session:get( 'login' ) )
+    then( session:get( 'login' ) )
+    else( $params?_config( 'defaultUser' ) )
+    
+  let $путьФайлы := 
+    'Дела учебные по кафедре ЭУФ/ГИА по ЭУФ/ВКР приказы, нормативка/ВКР 2021/'
+  let $идентификаторПапки := 
+    bitrix.disk:getFolderID( $путьФайлы )
   let $группы := 
-    bitrix.disk:getFileXLSX( $content:folderID, map{ 'recursive' : 'yes', 'name' : 'Список групп.xlsx' } )
+    bitrix.disk:getFileXLSX( $идентификаторПапки, map{ 'recursive' : 'yes', 'name' : 'Список групп.xlsx' } )
   
   let $спискиГрупп := 
-    bitrix.disk:getFileList( $content:folderID, map{ 'recursive' : 'yes', 'name' : '.xlsx$' } )
+    bitrix.disk:getFileList( $идентификаторПапки, map{ 'recursive' : 'yes', 'name' : '.xlsx$' } )
   let $группыЗагруженные := 
     $спискиГрупп
     /NAME/substring-before( text(), '.' )[ matches( ., '-[0-9]{2}' ) ]
-    
+  
+  let $ресурсы := 
+    bitrix.disk:getFileXLSX(
+      $идентификаторПапки,
+      map{ 'recursive' : 'yes', 'name' : '_Ресурсы.xlsx' }
+    )/file/table[ 1 ]/row 
  
   let $списокГрупп :=
       <table class = "table">
       <tr>
         <th>Группа</th>
-        <th>Наличие ЭЦП</th>
+        <th>Подписал</th>
+        <th>Еще не подписал</th>
         <th></th>
         <th></th>
       </tr>
       {
         for $i in $группы/file/table[ 1 ]/row
         let $номерГруппы := $i/cell[ @label = "Группа" ]/text()
+        let $ресурс := $путьФайлы || 'Группы/' || $номерГруппы || '.xlsx'
+        let $субъектыПодписи := 
+          $ресурсы[ starts-with( $ресурс, cell[ @label = "Ресурс" ]/text() ) ]
+          /cell[ @label = "Субъект" ]/text()
+        
         let $подписи :=
           if( $номерГруппы = $группыЗагруженные )
           then(
             fetch:text(
               web:create-url(
-                'http://localhost:8984/simplex/api/v01/signature/list.get', 
+                $params?_config( 'host' ) || '/simplex/api/v01/signature/list.get', 
                 map{
-                  'path' : 'Дела учебные по кафедре ЭУФ/ГИА по ЭУФ/ВКР приказы, нормативка/ВКР 2021/Группы/' || $номерГруппы || '.xlsx'
+                  'path' : $ресурс
                 }
               )
             )
@@ -65,38 +85,41 @@ declare function content:списокГрупп( $год, $кафедра ){
           )
         let $hrefСлужебка := 
           '/sandbox/ivgpu/generate/Служебная/21/ТемыВКР/' || $номерГруппы
-        let $кнопка := 
+        let $стильКнопки := 
            if( $подписи )
            then( "btn btn-success" )
            else( "btn btn-info" )
+        let $кнопкаПодписать :=
+          if(
+             $номерГруппы = $группыЗагруженные and
+             ( ( $user = $субъектыПодписи ) and not ( $user = $подписи ) )
+           )
+           then(
+             let $hrefSign :=
+               web:create-url(
+                 '/simplex/api/v01/signature/file.sign',
+                 map{
+                   'path' : 'Дела учебные по кафедре ЭУФ/ГИА по ЭУФ/ВКР приказы, нормативка/ВКР 2021/Группы/' || $номерГруппы || '.xlsx',
+                   'redirect' : '/simplex/graduation/groups?year=2021&amp;dep=21'
+                 }
+               ) 
+             return
+               <div><a href = "{ $hrefSign }" class = "btn btn-info">Подписать</a></div>
+           )
+           else()
         return
            <tr>
              <td><a href = "{ $href }">{ $номерГруппы }</a></td>
-               <td>{
-                 if( $подписи )
-                 then( '(' || $подписи || ')' )
-                 else(
-                   if( $номерГруппы = $группыЗагруженные )
-                   then(
-                     let $hrefSign :=
-                       web:create-url(
-                         '/simplex/api/v01/signature/file.sign',
-                         map{
-                           'path' : 'Дела учебные по кафедре ЭУФ/ГИА по ЭУФ/ВКР приказы, нормативка/ВКР 2021/Группы/' || $номерГруппы || '.xlsx',
-                           'redirect' : '/simplex/graduation/groups?year=2021&amp;dep=21'
-                         }
-                       ) 
-                     return
-                       <a href = "{ $hrefSign }" class = "btn btn-info">Подписать</a>
-                   )
-                   else()
-                 )
-               }</td>
+               <td>
+                 { string-join( $подписи[ . = $субъектыПодписи ], ', ' ) } 
+                 { $кнопкаПодписать }
+               </td>
+             <td>{ string-join( $субъектыПодписи[ . != $подписи ], ', ' ) }</td>
              <td>
                {
                  if( $номерГруппы = $группыЗагруженные )
                  then(
-                   <a href = "{ $hrefСлужебка }" class="{ $кнопка }">Скачать служебку на темы</a>
+                   <a href = "{ $hrefСлужебка }" class="{ $стильКнопки }">Скачать служебку на темы</a>
                  )
                  else()
                }</td>

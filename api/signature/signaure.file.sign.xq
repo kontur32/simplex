@@ -3,6 +3,9 @@ module  namespace ivgpu = '/sandbox/ivgpu/signature/file/sign';
 import module namespace request = 'http://exquery.org/ns/request';
 
 import module namespace 
+  config = "app/config" at "../../functions/config.xqm";
+
+import module namespace 
   bitrix.disk = 'bitrix.disk' 
     at '../../../sandbox.ivgpu/modules/bitrix.disk.xqm';
 
@@ -39,5 +42,5 @@ function ivgpu:main( $полноеИмяФайла as xs:string, $redirect ){
       )
     )
   return
-    web:redirect( request:scheme() || '://' || request:hostname() || $redirect )
+    web:redirect( $config:param( 'host' ) || $redirect )
 };
