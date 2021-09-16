@@ -86,7 +86,7 @@ declare function content:списокГрупп( $год, $кафедра, $para
         let $hrefСлужебка := 
           '/sandbox/ivgpu/generate/Служебная/21/ТемыВКР/' || $номерГруппы
         let $стильКнопки := 
-           if( $подписи )
+           if( empty( distinct-values( $субъектыПодписи[ not( .= $подписи ) ] ) ) )
            then( "btn btn-success" )
            else( "btn btn-info" )
         let $кнопкаПодписать :=
