@@ -2,22 +2,18 @@ module namespace header = "header";
 
 declare function header:main( $params as map(*) ){
    let $requestParams := 
-     for $i in request:parameter-names()
-     return
-       $i || '=' || request:parameter( $i )
-   
+     map:merge(
+       for $i in request:parameter-names()
+       return
+         map{ $i : request:parameter( $i ) }
+     )
+
    let $authURL :=
      'https://accounts.ivgpu.com/login?redirect=' ||
      web:encode-url(
        'https://sm2.ivgpu.com/sandbox/ivgpu/statistic/login?redirect=' ||
        web:encode-url( 
-         web:create-url(
-           'https://sm2.ivgpu.com/simplex',
-           map{
-             'year' : '2021',
-             'dep' : '21'
-           }
-         )
+         web:create-url( request:uri(), $requestParams )
        )
      )
 
