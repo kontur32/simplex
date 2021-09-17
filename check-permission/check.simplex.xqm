@@ -11,19 +11,14 @@ function check:userArea(){
    if( $token and not( session:get( 'login' ) ) )
    then(
       let $login := 
-        let $t := 
-           fetch:text(
-            'http://iro37.ru/res/tmp/base.php?str=' || tokenize( $token, '\.' )[ 2 ]
-          )
         let $t :=
           convert:binary-to-string(
             xs:base64Binary(
-              tokenize( $token, '\.' )[ 2 ] || '='
+              tokenize( $token, '\.' )[ 2 ] || '=' 
             )
           )
-        
         return
-         json:parse( $t )/json/email/text()
+         json:parse( $t )
       
       let $кафедра :=
         let $пользователи := 
@@ -32,13 +27,16 @@ function check:userArea(){
                 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSG_nG0Rfo3iJndyRD3WKPrukd4gNR1FYP0MVu6ddveIGNRkKX21vdUp6D0P4rMxJBVwgWLW35y-Lr7/pub?gid=1161096430&amp;single=true&amp;output=csv'
             ), map{ 'header' : true() } )/csv/record
         return
-          $пользователи[ email/text() = $login ]/Кафедра/text()
+          $пользователи[ email/text() = $login/json/email/text() ]/Кафедра/text()
+      
       let $пользователь := 
-        if( $login )then( $login )else( 'unknown' )
+        if( $login )then( $login/json/email/text() )else( 'unknown' )
+      
       return
         (
           session:set( 'login', $пользователь ),
-          session:set( 'department', $кафедра )
+          session:set( 'department', $кафедра ),
+          session:set( 'userName', $login/json/last_name/text() )
         )
      )
      else()
