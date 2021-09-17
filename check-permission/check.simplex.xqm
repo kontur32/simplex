@@ -15,6 +15,13 @@ function check:userArea(){
            fetch:text(
             'http://iro37.ru/res/tmp/base.php?str=' || tokenize( $token, '\.' )[ 2 ]
           )
+        let $t :=
+          convert:binary-to-string(
+            xs:base64Binary(
+              tokenize( $token, '\.' )[ 2 ] || '='
+            )
+          )
+        
         return
          json:parse( $t )/json/email/text()
       
