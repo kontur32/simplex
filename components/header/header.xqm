@@ -10,7 +10,7 @@ declare function header:main( $params as map(*) ){
      web:create-url(
        'https://accounts.ivgpu.com/login?redirect=' ||
        'https://sm2.ivgpu.com/sandbox/ivgpu/statistic/login?redirect=' || 
-       request:uri(),
+       'https://sm2.ivgpu.com/simplex',
        map{
          'year' : '2021',
          'dep' : '21'
