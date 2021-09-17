@@ -18,7 +18,7 @@ function check:userArea(){
             )
           )
         return
-         json:parse( $t )
+         json:parse( $t )/json
       
       let $кафедра :=
         let $пользователи := 
@@ -27,16 +27,24 @@ function check:userArea(){
                 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSG_nG0Rfo3iJndyRD3WKPrukd4gNR1FYP0MVu6ddveIGNRkKX21vdUp6D0P4rMxJBVwgWLW35y-Lr7/pub?gid=1161096430&amp;single=true&amp;output=csv'
             ), map{ 'header' : true() } )/csv/record
         return
-          $пользователи[ email/text() = $login/json/email/text() ]/Кафедра/text()
+          $пользователи[ email/text() = $login/email/text() ]/Кафедра/text()
       
       let $пользователь := 
-        if( $login )then( $login/json/email/text() )else( 'unknown' )
+        if( $login )then( $login/email/text() )else( 'unknown' )
       
+      let $userName := 
+        if( $login/last__name/text() )
+        then(
+          $login/last__name/text() || ' ' ||
+          substring( $login/first__name/text(), 1, 1 ) || '.' ||
+          substring( $login/middle__name/text(), 1, 1 ) || '.'
+        )
+        else( 'John Doe' )
       return
         (
           session:set( 'login', $пользователь ),
           session:set( 'department', $кафедра ),
-          session:set( 'userName', $login/json/last_name/text() )
+          session:set( 'userName', $userName )
         )
      )
      else()
