@@ -31,7 +31,8 @@ declare function header:main( $params as map(*) ){
        map{
           'логотип' : $params?_tpl( 'header/logo', map{} ),
           'mainMenu' : $params?_tpl( 'header/mainMenu', $params  ),
-          'avatar' : <a href = '{ $authURL }' type="button" class="btn btn-info" >ВОЙТИ</a>
+          'avatar' : 
+            <a href = '{ web:encode-url( $authURL ) }' type="button" class="btn btn-info" >ВОЙТИ</a>
         }
     )
   return
