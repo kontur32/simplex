@@ -7,9 +7,16 @@ declare function header:main( $params as map(*) ){
        $i || '=' || request:parameter( $i )
    
    let $authURL :=
-     'https://accounts.ivgpu.com/login?redirect=' ||
-     'https://sm2.ivgpu.com/sandbox/ivgpu/statistic/login?redirect=' || 
-     request:uri() || '?year=2021&amp;dep=21' 
+     web:create-url(
+       'https://accounts.ivgpu.com/login?redirect=' ||
+       'https://sm2.ivgpu.com/sandbox/ivgpu/statistic/login?redirect=' || 
+       request:uri(),
+       map{
+         'year' : '2021',
+         'dep' : '21'
+       }
+     )
+      
   
   let $p := 
     if( session:get( 'login' ) )
