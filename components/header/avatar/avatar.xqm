@@ -18,6 +18,6 @@ declare function avatar:main( $params as map(*) ){
     map{
       "userLabel" : $userLabel,
       "userAvatarURL" : $avatar,
-      "redirect" : request:uri() || '?' || string-join( $requestParams, '&amp;' )
+      "redirect" : request:uri() || '?year=2021&amp;dep=21' 
     }
 };
