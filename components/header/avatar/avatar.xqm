@@ -1,11 +1,18 @@
 module namespace avatar = "header/avatar";
 
-
 declare function avatar:main( $params as map(*) ){
   let $requestParams := 
-     for $i in request:parameter-names()
-     return
-       $i || '=' || request:parameter( $i )
+     map:merge(
+       for $i in request:parameter-names()
+       return
+         map{ $i : request:parameter( $i ) }
+     )
+     
+  let $redirectURL :=
+     web:encode-url( 
+       web:create-url( request:uri(), $requestParams )
+     )
+
   let $userLabel :=
     if( session:get( 'userName') )
     then( session:get( 'userName' ) )
@@ -18,6 +25,6 @@ declare function avatar:main( $params as map(*) ){
     map{
       "userLabel" : $userLabel,
       "userAvatarURL" : $avatar,
-      "redirect" : 'https://sm2.ivgpu.com/simplex'
+      "redirect" : $redirectURL
     }
 };
