@@ -9,7 +9,7 @@ declare function header:main( $params as map(*) ){
    let $authURL :=
      'https://accounts.ivgpu.com/login?redirect=' ||
      'https://sm2.ivgpu.com/sandbox/ivgpu/statistic/login?redirect=' || 
-     request:uri() || '?' || string-join( $requestParams, '&amp;' )
+     request:uri() || '?year=2021&amp;dep=21' 
   
   let $p := 
     if( session:get( 'login' ) )
