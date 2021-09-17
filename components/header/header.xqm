@@ -7,15 +7,17 @@ declare function header:main( $params as map(*) ){
        $i || '=' || request:parameter( $i )
    
    let $authURL :=
-   'https://accounts.ivgpu.com/login?redirect=' ||
+     'https://accounts.ivgpu.com/login?redirect=' ||
      web:encode-url(
-        web:create-url(
-         'https://sm2.ivgpu.com/sandbox/ivgpu/statistic/login?redirect=' || 
-         'https://sm2.ivgpu.com/simplex',
-         map{
-           'year' : '2021',
-           'dep' : '21'
-         }
+       'https://sm2.ivgpu.com/sandbox/ivgpu/statistic/login?redirect=' ||
+       web:encode-url( 
+         web:create-url(
+           'https://sm2.ivgpu.com/simplex',
+           map{
+             'year' : '2021',
+             'dep' : '21'
+           }
+         )
        )
      )
 
