@@ -20,11 +20,7 @@ declare function content:main( $params ){
 };
 
 declare function content:списокГрупп( $год, $кафедра, $params ){
-  let $user := 
-    if( session:get( 'login' ) )
-    then( session:get( 'login' ) )
-    else( $params?_config( 'defaultUser' ) )
-    
+  let $user := session:get( 'login' )    
   let $путьФайлы := 
     'Дела учебные по кафедре ЭУФ/ГИА по ЭУФ/ВКР приказы, нормативка/ВКР 2021/'
   
