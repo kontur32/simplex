@@ -60,7 +60,7 @@ function md-to-moodle:question($params as map(*)) as element(question){
     <penalty>0.3333333</penalty>
     <hidden>0</hidden>
     <idnumber></idnumber>
-    <single>true</single>
+    <single>{$params?типВопроса}</single>
     <shuffleanswers>true</shuffleanswers>
     <answernumbering>abc</answernumbering>
     <showstandardinstruction>0</showstandardinstruction>
@@ -81,12 +81,32 @@ declare
 function md-to-moodle:quiz($params as map(*)) as element(quiz){
   <quiz>{
     for $вопрос in $params?вопросы
-    let $телоВопроса := md-to-moodle:question(map{"вопрос":$вопрос/p/text()})
+    let $оценкаПравильных := (1 div count($вопрос/ul/li/strong)) * 100
+    let $оценкаНеправильных :=
+      if($оценкаПравильных = 100)
+      then(0)
+      else((1 div count($вопрос/ul/li[not(strong)])) * -100)
+    let $типВопроса :=
+      if($оценкаПравильных = 100)
+      then("true")
+      else("false")
+    let $телоВопроса :=
+      md-to-moodle:question(
+        map{
+          "вопрос":$вопрос/p/text(),
+          "типВопроса":$типВопроса
+        }
+      )
     let $ответы :=
       for $ответ in $вопрос/ul/li
-      let $оценка := $ответ/strong ?? "100"!!"0"
+      let $оценка := $ответ/strong ?? $оценкаПравильных !! $оценкаНеправильных
       return
-        md-to-moodle:answer(map{"ответ":$ответ//text(), "оценка":$оценка})
+        md-to-moodle:answer(
+          map{
+            "ответ":$ответ//text(),
+            "оценка":$оценка
+          }
+        )
     return
       $телоВопроса update insert node $ответы into .
   }</quiz>

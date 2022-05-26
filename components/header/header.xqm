@@ -1,6 +1,6 @@
 module namespace header = "header";
 
-declare function header:main($params){
+declare function header:main($params as map(*)){
    let $authURL :=
      'https://accounts.ivgpu.com/login?redirect=' ||
      web:encode-url(
