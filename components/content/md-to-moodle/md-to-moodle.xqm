@@ -1,16 +1,22 @@
 module namespace md-to-moodle = 'content/md-to-moodle';
 
-declare function md-to-moodle:main( $params ){
+declare function md-to-moodle:main($params){
   let $mdText := if($params?file)then($params?file)else('')
   let $html := md-to-moodle:renderMd(map{"текст":$mdText})/body/ol/li
   let $quiz := md-to-moodle:quiz(map{"вопросы":$html})
   let $hash := random:uuid()
   let $fileName := 'quiz-' || $hash ||'.xml'
   let $save := file:write( file:temp-dir() || '/' || $fileName, $quiz)
+  let $ссылка :=
+     if($params?file)
+     then(
+       <a href="/simplex/api/v0.1/files/temp/{$fileName}" class="btn btn-primary mb-2">скачать тест</a>
+     )
+     else('')
   return
     map{
       'содержание' : <ol>{$html}</ol>,
-      'ссылка': <a href="/simplex/api/v0.1/files/temp/{$fileName}" class="btn btn-primary mb-2">скачать тест</a>
+      'ссылка': $ссылка
     }
 };
 

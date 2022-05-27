@@ -17,7 +17,7 @@ function saivpds:main($file){
           xs:base64Binary(map:get($file, map:keys($file)[1]))
         )
       )
-      else('файла нет')
+      else()
     let $params :=    
        map{
         'header' : funct:tpl('header', map{}),
