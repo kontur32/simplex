@@ -13,20 +13,15 @@ declare function header:main($params as map(*)){
   let $p := 
     if( session:get( 'login' ) )
     then(
-       map{
-          'логотип' : $params?_tpl( 'header/logo', map{} ),
-          'mainMenu' : $params?_tpl( 'header/mainMenu', $params  ),
-          'avatar' : $params?_tpl( 'header/avatar', map{} )
-        } 
+        $params?_tpl( 'header/avatar', map{} )
     )
     else(
-       map{
-          'логотип' : $params?_tpl( 'header/logo', map{} ),
-          'mainMenu' : $params?_tpl( 'header/mainMenu', $params  ),
-          'avatar' : 
-            <a href = '{  $authURL }' type="button" class="btn btn-info" >ВОЙТИ</a>
-        }
+        <a href = '{  $authURL }' type="button" class="btn btn-info" >ВОЙТИ</a>
     )
   return
-    $p
+    map{
+          'логотип' : $params?_tpl( 'header/logo', map{} ),
+          'mainMenu' : $params?_tpl( 'header/mainMenu', map{}  ),
+          'avatar' : $p
+        }
 };
