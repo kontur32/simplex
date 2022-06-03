@@ -20,7 +20,6 @@ function saivpds:main($file){
       else()
     let $params :=    
        map{
-        'header' : funct:tpl('header', map{}),
         'content' : funct:tpl('content/md-to-moodle', map{'file':$f}),
         'footer' : funct:tpl('footer', map{})
       }

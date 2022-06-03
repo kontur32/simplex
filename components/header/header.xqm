@@ -11,12 +11,10 @@ declare function header:main($params as map(*)){
      )
 
   let $p := 
-    if( session:get( 'login' ) )
-    then(
-        $params?_tpl( 'header/avatar', map{} )
-    )
+    if(session:get('login'))
+    then($params?_tpl('header/avatar', map{}))
     else(
-        <a href = '{  $authURL }' type="button" class="btn btn-info" >ВОЙТИ</a>
+        <a href = '{$authURL}' type="button" class="btn btn-info" >ВОЙТИ</a>
     )
   return
     map{
