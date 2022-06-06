@@ -21,7 +21,8 @@ function saivpds:main($file){
     let $params :=    
        map{
         'content' : funct:tpl('content/md-to-moodle', map{'file':$f}),
-        'footer' : funct:tpl('footer', map{})
+        'footer' : funct:tpl('footer', map{}),
+        'header' : funct:tpl('header', map{})
       }
     return
       funct:tpl('main', $params)
