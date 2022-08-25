@@ -86,10 +86,14 @@ declare function court-calc:days($s, $e){
       map{
         "Год":year-from-date($s),
         "Месяц":month-from-date($s),
+        "НачальнаяДата":$s,
+        "КонечнаяДата":$s + functx:dayTimeDuration($days - 1,0,0,0),
         "Дней":$days,
         "днейВМесяце":functx:days-in-month($s)
       },
-      if($next < $e)then(court-calc:days($next, $e))else()
+      if($next < $e)
+      then(court-calc:days($next, $e))
+      else()
     )
 };
 
@@ -110,13 +114,16 @@ declare function court-calc:summ($rawData) as map(*)* {
     let $суммаЗаМесяц := ($i?Дней div $i?днейВМесяце) * $индексЦен * $sum
     return
       map{
-      "Год":$i?Год,
-      "Месяц":$i?Месяц,
-      "Дней":$i?Дней,
-      "индексЦен":$индексЦен * 100,
-      "суммаВПользовании":$sum,
-      "суммаЗаМесяц":$суммаЗаМесяц
-    }
+        "Год":$i?Год,
+        "Месяц":$i?Месяц,
+        "Дней":$i?Дней,
+        "НачальнаяДата":$i?НачальнаяДата,
+        "КонечнаяДата":$i?КонечнаяДата,
+        "днейВМесяце":$i?днейВМесяце,
+        "индексЦен":$индексЦен * 100,
+        "суммаВПользовании":$sum,
+        "суммаЗаМесяц":$суммаЗаМесяц
+      }
   return
     $суммаПоМесяцам
   
@@ -154,11 +161,11 @@ declare function court-calc:output-trci($расчет){
             for $i in $расчет
             return
              <row>
-               <cell>{$i?Год}</cell>
-               <cell>{$i?Месяц}</cell>
                <cell>{round($i?суммаВПользовании, 2)}</cell>
-               <cell>{round($i?индексЦен, 2)}</cell>
+               <cell>{format-date($i?НачальнаяДата, "[D01].[M01].[Y0001]")} - {format-date($i?КонечнаяДата, "[D01].[M01].[Y0001]")}</cell>
                <cell>{$i?Дней}</cell>
+               <cell>{round($i?индексЦен + 100, 2)}</cell>
+               <cell>{round($i?суммаВПользовании, 2)} х {round($i?индексЦен, 2)} х {$i?Дней} / {$i?днейВМесяце}</cell>
                <cell>{round($i?суммаЗаМесяц, 2)}</cell>
              </row>
           }
