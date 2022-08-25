@@ -1,7 +1,5 @@
 module namespace md-to-moodle = 'content/md-to-moodle';
 
-declare variable $md-to-moodle:token := "glpat-eK8sXqtAqK9KJDiikh-4";
-
 declare function md-to-moodle:main($params){
   let $mdText := if($params?file)then($params?file)else('')
   let $html :=
@@ -50,12 +48,16 @@ function md-to-moodle:renderMd($params as map(*)) as element(html)*{
 declare
   %private
 function md-to-moodle:answer($params as map(*)) as element(answer){
-  <answer fraction="{$params?оценка}" format="moodle_auto_format">
-    <text>{$params?ответ}</text>
-    <feedback format="moodle_auto_format">
-      <text></text>
-    </feedback>
-  </answer>
+    <answer fraction="{$params?оценка}" format="plain_text">
+      <text>{
+        if($params?ответ instance of element())
+        then($params?ответ//text())
+        else($params?ответ)
+      }</text>
+      <feedback format="moodle_auto_format">
+        <text></text>
+      </feedback>
+    </answer>
 };
 
 declare
@@ -114,11 +116,15 @@ function md-to-moodle:quiz($params as map(*)) as element(quiz){
       )
     let $ответы :=
       for $ответ in $вопрос/ul/li
+      let $текст :=
+        if($ответ/strong)
+        then($ответ/strong)
+        else($ответ)
       let $оценка := $ответ/strong ?? $оценкаПравильных !! $оценкаНеправильных
       return
         md-to-moodle:answer(
           map{
-            "ответ":$ответ//text(),
+            "ответ":$текст,
             "оценка":$оценка
           }
         )
