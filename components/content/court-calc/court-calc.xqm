@@ -132,16 +132,23 @@ declare function court-calc:summ($rawData) as map(*)* {
 declare function court-calc:output-table($расчет){
   let $поМесяцам :=  
       for $i in $расчет
+      let $формулаРасчета := 
+        <span>{round($i?суммаВПользовании, 2)} х {round($i?индексЦен, 2)}% {$i?Дней != $i?днейВМесяце ?? "х" || $i?Дней || "/" || $i?днейВМесяце !! ""}</span>
       return
          <tr>
            <td>{round($i?суммаВПользовании, 2)}</td>
            <td>{format-date($i?НачальнаяДата, "[D01].[M01].[Y0001]")} - {format-date($i?КонечнаяДата, "[D01].[M01].[Y0001]")}</td>
            <td>{$i?Дней}</td>
            <td>{round($i?индексЦен + 100, 2)}</td>
-           <td>{round($i?суммаВПользовании, 2)} х {round($i?индексЦен, 2)}% {$i?Дней != $i?днейВМесяце ?? "х" || $i?Дней || "/" || $i?днейВМесяце !!""}</td>
-           <td>{round($i?суммаЗаМесяц, 2)}</td>
+           <td>{$i?суммаЗаМесяц > 0 ?? $формулаРасчета !! "расчет не производится"}</td>
+           <td>{$i?суммаЗаМесяц > 0 ?? round($i?суммаЗаМесяц, 2) !! "-"}</td>
          </tr>
-  let $суммаВсего := sum($расчет?суммаЗаМесяц)
+  let $суммаВсего := sum(
+    for $i in $расчет
+    where $i?индексЦен > 0
+    return
+      $i?суммаЗаМесяц
+  )
   return
      (
        $поМесяцам,
@@ -153,20 +160,32 @@ declare function court-calc:output-table($расчет){
 };
 
 declare function court-calc:output-trci($расчет){
+  let $суммаВсего := 
+    sum(
+      for $i in $расчет
+      where $i?индексЦен > 0
+      return
+        $i?суммаЗаМесяц
+    )
+  return
   <table>
     <row id='tables'>
       <cell id="Таблица">
         <table>
           {
             for $i in $расчет
+            let $формулаРасчета := 
+             serialize(
+               <span>{round($i?суммаВПользовании, 2)} х {round($i?индексЦен, 2)}% {$i?Дней != $i?днейВМесяце ?? "х" || $i?Дней || "/" || $i?днейВМесяце !! ""}</span>/text()
+             )
             return
              <row>
                <cell>{round($i?суммаВПользовании, 2)}</cell>
                <cell>{format-date($i?НачальнаяДата, "[D01].[M01].[Y0001]")} - {format-date($i?КонечнаяДата, "[D01].[M01].[Y0001]")}</cell>
                <cell>{$i?Дней}</cell>
                <cell>{round($i?индексЦен + 100, 2)}</cell>
-               <cell>{round($i?суммаВПользовании, 2)} х {round($i?индексЦен, 2)}% {$i?Дней != $i?днейВМесяце ?? "х" || $i?Дней || "/" || $i?днейВМесяце !!""}</cell>
-               <cell>{round($i?суммаЗаМесяц, 2)}</cell>
+               <cell>{$i?индексЦен > 0 ?? $формулаРасчета !! "расчет не производится"}</cell>
+               <cell>{$i?индексЦен > 0 ?? round($i?суммаЗаМесяц, 2) !! "-"}</cell>
              </row>
           }
           <row>
@@ -175,7 +194,7 @@ declare function court-calc:output-trci($расчет){
             <cell></cell>
             <cell></cell>
             <cell></cell>
-            <cell>{round(sum($расчет?суммаЗаМесяц), 2)}</cell>
+            <cell>{round($суммаВсего, 2)}</cell>
           </row>
         </table>
       </cell>
